@@ -6,9 +6,10 @@ $( document ).ready(function() {
         'x-access-token': token
       }
     });
+    checklogin();
+  } else {
+    displayLogoutButton(false);
   }
-
-  checklogin();
 });
 
 function checklogin() {
@@ -17,8 +18,13 @@ function checklogin() {
 		url:'/auth/check',
 		success:function(resp){
       console.log(resp);
-      if (resp.tokenverified && window.location.pathname==="/auth/login") {
-        window.location = "/";
+      if (resp.tokenverified) {
+        if (window.location.pathname!="/") {
+          window.location = "/";
+        }
+        displayLogoutButton(true);
+      } else {
+        displayLogoutButton(false);
       }
 		}
 	});
@@ -36,7 +42,23 @@ function login() {
       console.log(resp);
       if (resp.token) {
         window.localStorage.setItem('token',resp.token);
+        window.location = "/";
       }
 		}
 	});
+}
+
+function logout() {
+  window.localStorage.removeItem('token');
+  window.location = "/";
+}
+
+function displayLogoutButton(display) {
+  if (display) {
+    $("#logout").show();
+    $("#login").hide();
+  } else {
+    $("#login").show();
+    $("#logout").hide();
+  }
 }

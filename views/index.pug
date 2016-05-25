@@ -3,3 +3,5 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  a#login(href="/auth/login", style="display:none") login
+  button#logout(type="button", style="display:none", onClick="logout()") logout
