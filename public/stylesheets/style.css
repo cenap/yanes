@@ -6,3 +6,12 @@ body {
 a {
   color: #00B7FF;
 }
+
+#LoginModal .modal-dialog {
+  max-width: 380px;
+}
+
+#LoginModal input[type=text],
+#LoginModal input[type=password] {
+  max-width: 100%;
+}
