@@ -20,13 +20,9 @@ var LoginPopup = React.createClass({displayName: 'LoginPopup',
         if (resp.token) {
           window.localStorage.setItem('token',resp.token);
           component.setState({
-            message: "Logged In",
-            loggedin              : true,
-            loginbuttonvisible    : false,
-            registerbuttonvisible : false,
-            logoutbuttonvisible   : true
+            message: "Logged In"
           });
-          $('.loginbox').collapse('hide');
+          $('#LoginModal').modal('hide');
         }
   		}
   	});
