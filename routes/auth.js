@@ -3,6 +3,7 @@ var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var jwt = require('jsonwebtoken');
+var BBMessage = require('../models/BBMessage');
 
 var User = {
   id: null,
@@ -50,36 +51,49 @@ router.get('/login', function(req, res, next) {
 router.post('/login', authenticate, serialize, generateToken, respond);
 
 router.post('/check', function(req, res, next){
+  var BBM = new BBMessage();
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
   if (token) {
     var verifiedJwt = jwt.verify(token,'server secret', function(err, decoded) {
       if (err) {
-        return res.json({ success: false, message: 'Failed to authenticate token.' });
+        //return res.json({ success: false, message: 'Failed to authenticate token.' });
+        BBM.setWarning(401); //401 : "Token geçersiz."
       } else {
-        console.log(decoded);
+        //console.log(decoded);
         req.decoded = decoded;
-        res.status(200).json({ tokenverified: true, username : decoded.username });
+        BBM.setData({ tokenverified: true, username : decoded.username });
+        //res.status(200).json({ tokenverified: true, username : decoded.username });
       }
+      res.send(BBM);
     });
   }
 });
 
 function authenticate(req, res, next) {
+  var BBM = new BBMessage();
   passport.authenticate('local', function(err, user, info) {
-    if (err) { return next(err); }
-    if (!user) { return res.redirect('/auth/login'); }
-    req.logIn(user, {session:false}, function(err) {
-      if (err) { return next(err); }
-      //return res.redirect('/users/' + user.username);
-      next();
-    });
+    if (err || !user) {
+      BBM.setError(101);//101 : "Giriş yapılamadı.",
+      res.send(BBM);
+    } else {
+      req.logIn(user, {session:false}, function(err) {
+        if (err) {
+          BBM.setError(101);//101 : "Giriş yapılamadı.",
+          res.send(BBM);
+        }
+        next();
+      });
+    }
   })(req, res, next);
 }
 
 function serialize(req, res, next) {
+  var BBM = new BBMessage();
   User.updateOrCreate(req.user, function(err, user){
     if(err) {
-      return next(err);
+      BBM.setError(100);
+      BBM.setData({"details": err.toString()});
+      res.send(BBM);
     }
     // we store the updated information in req.user again
     req.user = {
@@ -101,10 +115,20 @@ function generateToken(req, res, next) {
 }
 
 function respond(req, res) {
+  console.log(req.err);
+  var BBM = new BBMessage();
+  BBM.setMessage(801); //801 : "Giriş başarılı",
+  BBM.setData({
+    user: req.user,
+    token: req.token
+  });
+  res.send(BBM);
+  /*
   res.status(200).json({
     user: req.user,
     token: req.token
   });
+  */
 }
 
 module.exports = router;

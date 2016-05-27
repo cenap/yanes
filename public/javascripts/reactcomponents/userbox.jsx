@@ -1,14 +1,14 @@
 var LoginPopup = React.createClass({displayName: 'LoginPopup',
   getInitialState: function() {
     return {
-      message               : "Log In",
+      message : "Log In",
     };
   },
   onTitleClick: function (evt) {
     $('.loginbox').collapse('toggle');
   },
   onLoginClick :function (evt) {
-    var component = this;
+    var thiscomponent = this;
     var un = $("input[name=username]").val();
     var pw = $("input[name=password]").val();
     $.ajax({
@@ -17,12 +17,24 @@ var LoginPopup = React.createClass({displayName: 'LoginPopup',
   		data:{username:un, password:pw},
   		success:function(resp){
         console.log(resp);
-        if (resp.token) {
-          window.localStorage.setItem('token',resp.token);
-          component.setState({
+        if (resp.status===0 && resp.data.token) {
+          window.localStorage.setItem('token',resp.data.token);
+          thiscomponent.setState({
             message: "Logged In"
           });
-          $('#LoginModal').modal('hide');
+          thiscomponent.state.message = resp.message;
+          //$('#LoginModal').modal('hide');
+        } else {
+          $("#LoginModal").shake(3,7,800);
+          if (resp.status<0) {
+            thiscomponent.setState({
+              message: resp.error.msg
+            });
+          } else if (resp.status>0) {
+            thiscomponent.setState({
+              message: resp.warning.msg
+            });
+          }
         }
   		}
   	});
@@ -62,6 +74,11 @@ var LoginPopup = React.createClass({displayName: 'LoginPopup',
                       <label className="checkbox">
                         <input type="checkbox" value="remember-me" /> Remember me
                       </label>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-xs-12 text-center">
+                      <p class="message">{this.state.message}</p>
                     </div>
                   </div>
                 </div>
