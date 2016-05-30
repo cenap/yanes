@@ -1,3 +1,11 @@
+var userboxStyle = {
+  'maxWidth': '380px'
+};
+
+var userboxInputStyle = {
+  'maxWidth': '100%'
+};
+
 var LoginPopup = React.createClass({displayName: 'LoginPopup',
   getInitialState: function() {
     return {
@@ -20,19 +28,28 @@ var LoginPopup = React.createClass({displayName: 'LoginPopup',
         if (resp.status===0 && resp.data.token) {
           window.localStorage.setItem('token',resp.data.token);
           thiscomponent.setState({
-            message: "Logged In"
+            message  : "Logged In",
+            msgstyle : 'initial'
           });
           thiscomponent.state.message = resp.message;
           //$('#LoginModal').modal('hide');
         } else {
-          $("#LoginModal").shake(3,7,800);
+          $("#LoginModal").shake(4,8,600);
           if (resp.status<0) {
             thiscomponent.setState({
-              message: resp.error.msg
+              message  : resp.error.msg,
+              success  : false,
+              error    : true,
+              warning  : false,
+              msgstyle : 'error'
             });
           } else if (resp.status>0) {
             thiscomponent.setState({
-              message: resp.warning.msg
+              message: resp.warning.msg,
+              success: true,
+              error  : false,
+              warning: true,
+              msgstyle : 'success'
             });
           }
         }
@@ -44,7 +61,7 @@ var LoginPopup = React.createClass({displayName: 'LoginPopup',
       //React.createElement('div', {className: "userbox"}, "Merhaba")
 
       <div id="LoginModal" className="modal fade" tabindex="-1" role="dialog">
-        <div className="modal-dialog">
+        <div className="modal-dialog" style={userboxStyle}>
           <div className="modal-content">
             <div className="modal-header">
               <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -58,7 +75,7 @@ var LoginPopup = React.createClass({displayName: 'LoginPopup',
                       Username:
                     </div>
                     <div className="col-sm-6">
-                      <input type="text" name="username" placeholder="Email address"/>
+                      <input type="text" style={userboxInputStyle} name="username" placeholder="Email address"/>
                     </div>
                   </div>
                   <div className="row">
@@ -66,7 +83,7 @@ var LoginPopup = React.createClass({displayName: 'LoginPopup',
                       Password:
                     </div>
                     <div className="col-sm-6">
-                      <input type="password" name="password" placeholder="Password"/>
+                      <input type="password" style={userboxInputStyle} name="password" placeholder="Password"/>
                     </div>
                   </div>
                   <div className="row">
@@ -78,7 +95,7 @@ var LoginPopup = React.createClass({displayName: 'LoginPopup',
                   </div>
                   <div className="row">
                     <div className="col-xs-12 text-center">
-                      <p class="message">{this.state.message}</p>
+                      <p class="message {this.state.msgstyle}">{this.state.message}</p>
                     </div>
                   </div>
                 </div>
@@ -100,7 +117,7 @@ var LoginPopup = React.createClass({displayName: 'LoginPopup',
 var UserBox = React.createClass({displayName: 'UserBox',
   getInitialState: function() {
     return {
-      message               : "Log In",
+      message               : "",
       loggedin              : false,
       loginbuttonvisible    : true,
       registerbuttonvisible : true,
