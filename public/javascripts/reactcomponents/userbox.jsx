@@ -32,7 +32,14 @@ var LoginPopup = React.createClass({displayName: 'LoginPopup',
             msgstyle : 'initial'
           });
           thiscomponent.state.message = resp.message;
-          //$('#LoginModal').modal('hide');
+          $('#LoginModal').modal('hide');
+          $('#LoginModal .loginbox').hide();
+          UserBox.setState({
+            message                  : resp.message,
+            loggedin                 : true,
+            userboxLoginButtonStyle  : {'display':'none'},
+            userboxLogoutButtonStyle : {'display':'initial'},
+          });
         } else {
           $("#LoginModal").shake(4,8,600);
           if (resp.status<0) {
@@ -93,10 +100,10 @@ var LoginPopup = React.createClass({displayName: 'LoginPopup',
                       </label>
                     </div>
                   </div>
-                  <div className="row">
-                    <div className="col-xs-12 text-center">
-                      <p class="message {this.state.msgstyle}">{this.state.message}</p>
-                    </div>
+                </div>
+                <div className="row message">
+                  <div className="col-xs-12 text-center">
+                    <p class="message {this.state.msgstyle}">{this.state.message}</p>
                   </div>
                 </div>
               </div>
@@ -117,11 +124,10 @@ var LoginPopup = React.createClass({displayName: 'LoginPopup',
 var UserBox = React.createClass({displayName: 'UserBox',
   getInitialState: function() {
     return {
-      message               : "",
-      loggedin              : false,
-      loginbuttonvisible    : true,
-      registerbuttonvisible : true,
-      logoutbuttonvisible   : false
+      message                  : "",
+      loggedin                 : false,
+      userboxLoginButtonStyle  : {'display':'initial'},
+      userboxLogoutButtonStyle : {'display':'none'},
     };
   },
   onShowLogin :function (evt) {
@@ -130,7 +136,8 @@ var UserBox = React.createClass({displayName: 'UserBox',
   render: function() {
     return (
       <div>
-        <a href="#" onClick={this.onShowLogin}>Login</a>
+        <a href="#" className="login-button"  style={this.state.userboxLoginButtonStyle} onClick={this.onShowLogin}>Login</a>
+        <a href="#" className="logout-button" style={this.state.userboxLogoutButtonStyle} onClick={this.onShowLogin}>Login</a>
         <LoginPopup/>
       </div>
     );
