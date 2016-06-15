@@ -15,7 +15,7 @@ var User = {
         } else {
           return false;
         }
-      }
+      };
       return cb(null, user);
     } else {
       return cb( new Error('Incorrect username.') , null);
@@ -47,8 +47,8 @@ router.get('/login', function(req, res, next) {
   res.render('login', { title: 'Giriş' });
 });
 
-//router.post('/login', passport.authenticate('local', {session:false}), serialize, generateToken, respond);
-router.post('/login', authenticate, serialize, generateToken, respond);
+
+
 
 router.post('/check', function(req, res, next){
   var BBM = new BBMessage();
@@ -68,6 +68,24 @@ router.post('/check', function(req, res, next){
     });
   }
 });
+
+
+router.post('/logout', function(req, res, next){
+  var BBM = new BBMessage();
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  if (token) {
+    BBM.setMessage(802); //802 : "Çıkış yaptınız.",
+  } else {
+    BBM.setWarning(402); //402 : "Daha önce çıkış yapılmış.",
+  }
+  res.send(BBM);
+});
+
+
+
+
+router.post('/login', authenticate, serialize, generateToken, respond);
+
 
 function authenticate(req, res, next) {
   var BBM = new BBMessage();

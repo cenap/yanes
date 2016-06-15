@@ -12,16 +12,19 @@ var i18n  = require('i18n');
 var Messages = {
 	800 : "Mesajınız var",
 	801 : "Giriş başarılı",
+	802 : "Çıkış yaptınız.",
 };
 
 var ErrorMessages = {
 	100 : "Bir hata oluştu.",
 	101 : "Giriş yapılamadı.",
+	102 : "Çıkış yapılamadı.",
 };
 
 var WarningMessages = {
 	400 : "Bir uyarı var.",
-	401 : "Token geçersiz."
+	401 : "Token geçersiz.",
+	402 : "Daha önce çıkış yapılmış.",
 };
 
 module.exports = function(){

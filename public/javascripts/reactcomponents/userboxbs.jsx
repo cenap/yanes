@@ -1,35 +1,71 @@
 var Button = ReactBootstrap.Button;
 var Modal  = ReactBootstrap.Modal;
+var Alert  = ReactBootstrap.Alert;
 
-const Userboxbs = React.createClass({
+var shown = {'display':'initial'};
+var hidden = {'display':'none'};
+
+var Userboxbs = React.createClass({
+
+  componentWillMount() {
+    $.ajax({
+      type:'POST',
+      url:'/auth/check',
+      success:function(resp){
+        console.log(resp);
+        if (resp.tokenverified) {
+          thiscomponent.setState({
+            status            : 'success',
+            message           : resp.message,
+            loginBox          : hidden,
+            loginButton       : hidden,
+            loginSubmitButton : hidden,
+            logoutButton      : shown,
+          })
+        }
+      }
+    });
+  },
 
   getInitialState() {
     return {
-      username                 : "",
-      password                 : "",
-      showModal                : false,
-      loggedin                 : false,
-      message                  : "",
-      loginBox                 : {'display':'initial'},
-      loginButton              : {'display':'initial'},
-      logoutButton             : {'display':'none'},
+      username       : '',
+      password       : '',
+      message        : 'Log In Now!',
+      status         : 'info',
+      showLoginModal : false,
+      showLogoutModal: false,
+      loggedin       : false,
+      loginBox       : shown,
+      loginButton    : shown,
+      logoutButton   : hidden,
+      loginSubmitButton  : shown,
     };
   },
 
-  display(component) {
-    this.setState({component: {'display':'initial'}});
+
+  openLoginModal() {
+    this.setState({
+      showLoginModal: true,
+      status : 'info',
+      message : 'Log In Now!',
+    });
   },
 
-  hide(component) {
-    this.setState({component: {'display':'none'}});
+  openLogoutModal() {
+    this.setState({
+      showLogoutModal: true,
+      status : 'danger',
+      message : 'Are you sure?',
+    });
   },
 
-  closeModal() {
-    this.setState({ showModal: false });
+  closeLoginModal() {
+    this.setState({ showLoginModal: false });
   },
 
-  openModal() {
-    this.setState({ showModal: true });
+  closeLogoutModal() {
+    this.setState({ showLogoutModal: false });
   },
 
   handleUsernameValueChange: function(event) {
@@ -53,30 +89,64 @@ const Userboxbs = React.createClass({
         if (resp.status===0 && resp.data.token) {
           window.localStorage.setItem('token',resp.data.token);
           thiscomponent.setState({
-            message  : "Logged In"
-          });
-          thiscomponent.state.message = resp.message;
-          thiscomponent.hide('loginBox');
-          thiscomponent.hide('loginButton');
-          thiscomponent.display('logoutButton');
-          thiscomponent.closeModal();
-
+            status            : 'success',
+            message           : resp.message,
+            loginBox          : hidden,
+            loginButton       : hidden,
+            loginSubmitButton : hidden,
+            logoutButton      : shown,
+          })
+          thiscomponent.closeLoginModal();
         } else {
           $("#LoginModal").shake(4,8,600);
           if (resp.status<0) {
             thiscomponent.setState({
               message  : resp.error.msg,
-              success  : false,
-              error    : true,
-              warning  : false,
+              status   : 'danger',
               msgstyle : 'error'
             });
           } else if (resp.status>0) {
             thiscomponent.setState({
-              message: resp.warning.msg,
-              success: true,
-              error  : false,
-              warning: true,
+              message  : resp.warning.msg,
+              status   : 'warning',
+              msgstyle : 'success'
+            });
+          }
+        }
+      }
+    });
+  },
+
+  onLogoutClick(evt) {
+    var thiscomponent = this;
+    $.ajax({
+      type:'POST',
+      url:'/auth/logout',
+      success:function(resp){
+        console.log(resp);
+        if (resp.status===0) {
+          window.localStorage.removeItem('token');
+          thiscomponent.setState({
+            status            : 'success',
+            message           : resp.message,
+            loginBox          : shown,
+            loginButton       : shown,
+            loginSubmitButton : shown,
+            logoutButton      : hidden,
+          })
+          thiscomponent.closeLogoutModal();
+        } else {
+          $("#LogoutModal").shake(4,8,600);
+          if (resp.status<0) {
+            thiscomponent.setState({
+              message  : resp.error.msg,
+              status   : 'danger',
+              msgstyle : 'error'
+            });
+          } else if (resp.status>0) {
+            thiscomponent.setState({
+              message  : resp.warning.msg,
+              status   : 'warning',
               msgstyle : 'success'
             });
           }
@@ -90,15 +160,15 @@ const Userboxbs = React.createClass({
     return (
       <div>
 
-        <Button bsStyle="primary" bsSize="large" onClick={this.openModal} style={this.state.loginButton}>
+        <Button bsStyle="primary" bsSize="large" onClick={this.openLoginModal} style={this.state.loginButton}>
           Login
         </Button>
 
-        <Button bsStyle="warning" bsSize="large" onClick={this.openModal} style={this.state.logoutButton}>
+        <Button bsStyle="warning" bsSize="large" onClick={this.openLogoutModal} style={this.state.logoutButton}>
           Logout
         </Button>
 
-        <Modal id="LoginModal" show={this.state.showModal} onHide={this.closeModal}>
+        <Modal id="LoginModal" show={this.state.showLoginModal} onHide={this.closeLoginModal}>
           <Modal.Header closeButton>
             <Modal.Title>Login</Modal.Title>
           </Modal.Header>
@@ -129,16 +199,33 @@ const Userboxbs = React.createClass({
               </div>
             </div>
             <div className="row message">
-              <div className="col-xs-12 text-center">
-                <p class="message {this.state.msgstyle}">{this.state.message}</p>
-              </div>
+              <Alert bsStyle={this.state.status} className="col-xs-12 text-center">
+                <p class="message">{this.state.message}</p>
+              </Alert>
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button bsStyle="danger" bsSize="large" onClick={this.closeModal}>Close</Button>
-            <Button bsStyle="primary" bsSize="large" onClick={this.onLoginClick}>Sign In</Button>
+            <Button bsStyle="danger" bsSize="sm" onClick={this.closeLoginModal}>Close</Button>
+            <Button bsStyle="primary" bsSize="sm" onClick={this.onLoginClick} style={this.state.loginSubmitButton}>Sign In</Button>
           </Modal.Footer>
         </Modal>
+
+
+        <Modal id="LogoutModal" show={this.state.showLogoutModal} onHide={this.closeLogoutModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Logout</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Alert bsStyle={this.state.status} className="col-xs-12 text-center">
+              <p class="message">{this.state.message}</p>
+            </Alert>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button bsStyle="warning" bsSize="sm" onClick={this.closeLogoutModal}>No, Cancel!</Button>
+            <Button bsStyle="primary" bsSize="sm" onClick={this.onLogoutClick} style={this.state.logoutSubmitButton}>Yes, Sign Out</Button>
+          </Modal.Footer>
+        </Modal>
+
       </div>
     );
   }

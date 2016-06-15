@@ -7,8 +7,7 @@ $( document ).ready(function() {
       }
     });
   }
-
-  checklogin();
+  //checklogin();
 });
 
 function checklogin() {
@@ -17,25 +16,10 @@ function checklogin() {
 		url:'/auth/check',
 		success:function(resp){
       console.log(resp);
-      if (resp.tokenverified && window.location.pathname==="/auth/login") {
-        window.location = "/";
-      }
-		}
-	});
-}
-
-
-function login() {
-  var un = $("input[name=username]").val();
-  var pw = $("input[name=password]").val();
-  $.ajax({
-		type:'POST',
-		url:'/auth/login',
-		data:{username:un, password:pw},
-		success:function(resp){
-      console.log(resp);
-      if (resp.token) {
-        window.localStorage.setItem('token',resp.token);
+      if (resp.tokenverified) {
+        if (window.location.pathname==="/auth/login") {
+          window.location = "/";
+        }
       }
 		}
 	});

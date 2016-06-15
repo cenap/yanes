@@ -2,5 +2,7 @@
 	"Bir hata oluştu.": "Bir hata oluştu.",
 	"Token geçersiz.": "Token geçersiz.",
 	"Giriş başarılı": "Giriş başarılı",
-	"Giriş yapılamadı.": "Giriş yapılamadı."
+	"Giriş yapılamadı.": "Giriş yapılamadı.",
+	"Çıkış yaptınız.": "Çıkış yaptınız.",
+	"Daha önce çıkış yapılmış.": "Daha önce çıkış yapılmış."
 }
