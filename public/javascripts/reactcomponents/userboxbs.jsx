@@ -8,12 +8,30 @@ var hidden = {'display':'none'};
 var Userboxbs = React.createClass({
 
   componentWillMount() {
+    var token = window.localStorage.getItem('token');
+    if (token) {
+      $.ajaxSetup({
+        headers: {
+          'x-access-token': token
+        }
+      });
+      console.log('Has token');
+    } else {
+      console.log('No token');
+    }
+    console.log('ajaxSetup completed');
+  },
+
+  componentDidMount() {
+    var thiscomponent = this;
+    console.log('mounted');
     $.ajax({
       type:'POST',
       url:'/auth/check',
       success:function(resp){
-        console.log(resp);
-        if (resp.tokenverified) {
+        //console.log(resp);
+        if (resp.data.tokenverified) {
+          console.log('Token verified.');
           thiscomponent.setState({
             status            : 'success',
             message           : resp.message,
@@ -85,8 +103,9 @@ var Userboxbs = React.createClass({
       url:'/auth/login',
       data:{username:un, password:pw},
       success:function(resp){
-        console.log(resp);
+        //console.log(resp);
         if (resp.status===0 && resp.data.token) {
+          console.log('Logged in.');
           window.localStorage.setItem('token',resp.data.token);
           thiscomponent.setState({
             status            : 'success',
@@ -123,7 +142,8 @@ var Userboxbs = React.createClass({
       type:'POST',
       url:'/auth/logout',
       success:function(resp){
-        console.log(resp);
+        //console.log(resp);
+        console.log('Logged out.');
         if (resp.status===0) {
           window.localStorage.removeItem('token');
           thiscomponent.setState({
