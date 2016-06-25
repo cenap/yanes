@@ -8,12 +8,12 @@ var hidden = {'display':'none'};
 var Userboxbs = React.createClass({
 
   componentWillMount() {
+    var thiscomponent = this;
     $.ajax({
       type:'POST',
       url:'/auth/check',
       success:function(resp){
-        console.log(resp);
-        if (resp.tokenverified) {
+        if (resp.status === 0 && resp.data.tokenverified) {
           thiscomponent.setState({
             status            : 'success',
             message           : resp.message,
@@ -31,6 +31,7 @@ var Userboxbs = React.createClass({
     return {
       username       : '',
       password       : '',
+      remember       : '',
       message        : 'Log In Now!',
       status         : 'info',
       showLoginModal : false,
@@ -76,14 +77,19 @@ var Userboxbs = React.createClass({
     this.setState({password: event.target.value});
   },
 
+  handleRememberValueChange: function(event) {
+    this.setState({remember: event.target.checked});
+  },
+
   onLoginClick(evt) {
     var thiscomponent = this;
     var un = this.state.username;
     var pw = this.state.password;
+    var rm = this.state.remember;
     $.ajax({
       type:'POST',
       url:'/auth/login',
-      data:{username:un, password:pw},
+      data:{username:un, password:pw, remember:rm},
       success:function(resp){
         console.log(resp);
         if (resp.status===0 && resp.data.token) {
@@ -124,7 +130,7 @@ var Userboxbs = React.createClass({
       url:'/auth/logout',
       success:function(resp){
         console.log(resp);
-        if (resp.status===0) {
+        if (resp.status>=0) {
           window.localStorage.removeItem('token');
           thiscomponent.setState({
             status            : 'success',
@@ -133,7 +139,10 @@ var Userboxbs = React.createClass({
             loginButton       : shown,
             loginSubmitButton : shown,
             logoutButton      : hidden,
-          })
+          });
+          if (resp.status>0) {
+            console.log(resp.warning.msg);
+          }
           thiscomponent.closeLogoutModal();
         } else {
           $("#LogoutModal").shake(4,8,600);
@@ -142,12 +151,6 @@ var Userboxbs = React.createClass({
               message  : resp.error.msg,
               status   : 'danger',
               msgstyle : 'error'
-            });
-          } else if (resp.status>0) {
-            thiscomponent.setState({
-              message  : resp.warning.msg,
-              status   : 'warning',
-              msgstyle : 'success'
             });
           }
         }
@@ -193,7 +196,7 @@ var Userboxbs = React.createClass({
               <div className="row">
                 <div className="col-xs-12 text-center">
                   <label className="checkbox">
-                    <input type="checkbox" value="remember-me" /> Remember me
+                    <input type="checkbox" name="remember" value="remember-me" onChange={this.handleRememberValueChange} defaultChecked={this.state.remember}/> Remember me
                   </label>
                 </div>
               </div>
