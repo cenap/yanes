@@ -1,1 +1,1 @@
-DEBUG=yanes:* node --debug ./bin/www
+DEBUG=yanes:* node-debug --no-preload ./bin/www

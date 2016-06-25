@@ -1,40 +1,22 @@
+var debug = require('debug')('yanes:auth');
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var jwt = require('jsonwebtoken');
 var BBMessage = require('../models/BBMessage');
+var i18n  = require('i18n');
 
-var User = {
-  id: null,
-  findOne: function(user, cb) {
-    if (user.username==="cenap"){
-      user.validPassword = function(password) {
-        if (password==="cenap") {
-          return true;
-        } else {
-          return false;
-        }
-      };
-      return cb(null, user);
-    } else {
-      return cb( new Error('Incorrect username.') , null);
-    }
-  },
-  updateOrCreate: function(user, cb) {
-    user.id = 1453;
-    cb (null,user);
-  }
-};
+var User = require('../models/user')();
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
+    User.find({ username: username }, function (err, user) {
       if (err) { return done(err); }
       if (!user) {
         return done(null, false, { message: 'Incorrect username.' });
       }
-      if (!user.validPassword(password)) {
+      if (!User.isPasswordValid(password)) {
         return done(null, false, { message: 'Incorrect password.' });
       }
       user.username = username;
@@ -46,9 +28,6 @@ passport.use(new LocalStrategy(
 router.get('/login', function(req, res, next) {
   res.render('login', { title: 'Giriş' });
 });
-
-
-
 
 router.post('/check', function(req, res, next){
   var BBM = new BBMessage();
@@ -69,7 +48,6 @@ router.post('/check', function(req, res, next){
   }
 });
 
-
 router.post('/logout', function(req, res, next){
   var BBM = new BBMessage();
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -80,8 +58,6 @@ router.post('/logout', function(req, res, next){
   }
   res.send(BBM);
 });
-
-
 
 
 router.post('/login', authenticate, serialize, generateToken, respond);
@@ -109,7 +85,7 @@ function serialize(req, res, next) {
   var BBM = new BBMessage();
   User.updateOrCreate(req.user, function(err, user){
     if(err) {
-      BBM.setError(100);
+      BBM.setError(100); //100 : "Bir hata oluştu.",
       BBM.setData({"details": err.toString()});
       res.send(BBM);
     }
@@ -144,12 +120,38 @@ function respond(req, res) {
     token: req.token
   });
   res.send(BBM);
-  /*
-  res.status(200).json({
-    user: req.user,
-    token: req.token
-  });
-  */
 }
+
+router.post('/remindpassword', function (req, res, next){
+  var BBM = new BBMessage();
+  var email = req.body.email;
+  debug(email);
+  if (email && email.length>3) {
+    User.findByEmail({ email: email }, function (err, user) {
+      if (err) {
+        debug(err);
+        BBM.setError(100); //100 : "Bir hata oluştu.",
+        BBM.setData(err);
+      } else {
+        if (user) {
+          //TODO 1. Generate one time password reset link
+          //TODO 2. Set link to user's email address
+          User.sendPasswordResetEmail();
+          BBM.setMessage(803);//803 : "Şifrenizi sıfırlamanız için email adresinize bir link gönderildi.",
+        } else {
+          BBM.setError(104);//104 : "Bu emaille kayıtlı kullanıcı bulunamadı.",
+        }
+      }
+      res.send(BBM);
+    });
+  } else {
+    BBM.setError(103);//103 : "Gerekli bilgi eksik.",
+    var label   = i18n.__('beklenen');
+    var details = {};
+    details[label] = 'email';
+    BBM.setData(details);
+    res.send(BBM);
+  }
+});
 
 module.exports = router;

@@ -4,5 +4,9 @@
 	"Giriş başarılı": "Giriş başarılı",
 	"Giriş yapılamadı.": "Giriş yapılamadı.",
 	"Çıkış yaptınız.": "Çıkış yaptınız.",
-	"Daha önce çıkış yapılmış.": "Daha önce çıkış yapılmış."
+	"Daha önce çıkış yapılmış.": "Daha önce çıkış yapılmış.",
+	"Gerekli bilgi eksik.": "Gerekli bilgi eksik.",
+	"beklenen": "beklenen",
+	"Bu emaille kayıtlı kullanıcı bulunamadı.": "Bu emaille kayıtlı kullanıcı bulunamadı.",
+	"Şifrenizi sıfırlamanız için email adresinize bir link gönderildi.": "Şifrenizi sıfırlamanız için email adresinize bir link gönderildi."
 }

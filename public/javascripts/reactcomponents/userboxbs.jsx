@@ -16,7 +16,6 @@ var Userboxbs = React.createClass({
         if (resp.status === 0 && resp.data.tokenverified) {
           thiscomponent.setState({
             status            : 'success',
-            message           : resp.message,
             loginBox          : hidden,
             loginButton       : hidden,
             loginSubmitButton : hidden,
@@ -96,7 +95,7 @@ var Userboxbs = React.createClass({
           window.localStorage.setItem('token',resp.data.token);
           thiscomponent.setState({
             status            : 'success',
-            message           : resp.message,
+            message           : resp.message.msg,
             loginBox          : hidden,
             loginButton       : hidden,
             loginSubmitButton : hidden,
@@ -134,7 +133,7 @@ var Userboxbs = React.createClass({
           window.localStorage.removeItem('token');
           thiscomponent.setState({
             status            : 'success',
-            message           : resp.message,
+            message           : resp.message.msg,
             loginBox          : shown,
             loginButton       : shown,
             loginSubmitButton : shown,
