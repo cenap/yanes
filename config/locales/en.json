@@ -8,5 +8,7 @@
 	"Gerekli bilgi eksik.": "Gerekli bilgi eksik.",
 	"beklenen": "beklenen",
 	"Bu emaille kayıtlı kullanıcı bulunamadı.": "Bu emaille kayıtlı kullanıcı bulunamadı.",
-	"Şifrenizi sıfırlamanız için email adresinize bir link gönderildi.": "Şifrenizi sıfırlamanız için email adresinize bir link gönderildi."
+	"Şifrenizi sıfırlamanız için email adresinize bir link gönderildi.": "Şifrenizi sıfırlamanız için email adresinize bir link gönderildi.",
+	"Bu isimle kayıtlı kullanıcı bulunamadı.": "Bu isimle kayıtlı kullanıcı bulunamadı.",
+	"Yanlış şifre.": "Yanlış şifre."
 }

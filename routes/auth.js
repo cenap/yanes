@@ -9,22 +9,6 @@ var i18n  = require('i18n');
 
 var User = require('../models/user')();
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.find({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      if (!User.isPasswordValid(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      user.username = username;
-      return done(null, user);
-    });
-  }
-));
-
 router.get('/login', function(req, res, next) {
   res.render('login', { title: 'Giriş' });
 });
@@ -35,13 +19,10 @@ router.post('/check', function(req, res, next){
   if (token) {
     var verifiedJwt = jwt.verify(token,'server secret', function(err, decoded) {
       if (err) {
-        //return res.json({ success: false, message: 'Failed to authenticate token.' });
         BBM.setWarning(401); //401 : "Token geçersiz."
       } else {
-        //console.log(decoded);
         req.decoded = decoded;
         BBM.setData({ tokenverified: true, username : decoded.username });
-        //res.status(200).json({ tokenverified: true, username : decoded.username });
       }
       res.send(BBM);
     });
@@ -66,12 +47,24 @@ router.post('/login', authenticate, serialize, generateToken, respond);
 function authenticate(req, res, next) {
   var BBM = new BBMessage();
   passport.authenticate('local', function(err, user, info) {
-    if (err || !user) {
-      BBM.setError(101);//101 : "Giriş yapılamadı.",
+    if (err) {
+      debug(err.message);
+      if (info) {debug(info);}
+      if (err.message==="Incorrect username." || err.message==="Cannot find user.") {
+        BBM.setError(105);//105: "Bu isimle kayıtlı kullanıcı bulunamadı."
+      } else if (err.message==="Incorrect password.") {
+        BBM.setError(106);//106: "Yanlış şifre."
+      } else {
+        BBM.setError(101);//101 : "Giriş yapılamadı."
+      }
+      res.send(BBM);
+    } else if (!user) {
+      BBM.setError(105);//105: "Bu isimle kayıtlı kullanıcı bulunamadı.",
       res.send(BBM);
     } else {
       req.logIn(user, {session:false}, function(err) {
         if (err) {
+          debug(err);
           BBM.setError(101);//101 : "Giriş yapılamadı.",
           res.send(BBM);
         }
@@ -80,6 +73,23 @@ function authenticate(req, res, next) {
     }
   })(req, res, next);
 }
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.find({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(new Error('Incorrect username.'), false, { message: 'Incorrect username:' + username});
+      }
+      if (!User.isPasswordValid(password)) {
+        return done(new Error('Incorrect password.'), false, { message: 'Incorrect password:' + password });
+      }
+      user.username = username;
+      return done(null, user);
+    });
+  }
+));
+
 
 function serialize(req, res, next) {
   var BBM = new BBMessage();

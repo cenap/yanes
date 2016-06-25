@@ -22,6 +22,8 @@ var ErrorMessages = {
   102: "Çıkış yapılamadı.",
   103: "Gerekli bilgi eksik.",
   104: "Bu emaille kayıtlı kullanıcı bulunamadı.",
+  105: "Bu isimle kayıtlı kullanıcı bulunamadı.",
+  106: "Yanlış şifre.",
 };
 
 var WarningMessages = {
