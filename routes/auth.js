@@ -123,17 +123,20 @@ function serialize(req, res, next) {
 }
 
 function generateToken(req, res, next) {
+  var expires = "120m";
+  if (req.body.remember) {
+    expires = "360d";
+  }
   req.token = jwt.sign(
     {
       id: req.user.id,
       username: req.user.username
     },
-    'server secret', {expiresIn: "120m"});
+    'server secret', {expiresIn: expires});
   next();
 }
 
 function respond(req, res) {
-  console.log(req.err);
   var BBM = new BBMessage();
   BBM.setMessage(801); //801 : "Giriş başarılı",
   BBM.setData({
