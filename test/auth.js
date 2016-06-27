@@ -105,6 +105,33 @@ describe('API:auth', function() {
       });
     });
 
+    it('should return warning code 401 without a valid token', function (done) {
+      request.post({url:logoutUrl,headers:{'x-access-token':'invalidtoken'}}, function(err, httpResponse, body){
+        var BBM = JSON.parse(httpResponse.body);
+        BBM.status.should.equal(1);
+        should.exist(BBM.warning);
+        should.exist(BBM.warning.code);
+        BBM.warning.code.should.equal(401);
+        done(err);
+      });
+    });
+
+    it('should return message code 802 with a valid token', function (done) {
+      var data = {"username":"cenap", "password":"cenap", "remember":true};
+      request.post({url:loginUrl, form: data}, function(err, httpResponse, body){
+        var BBM = JSON.parse(httpResponse.body);
+        var validtoken = BBM.data.token;
+        request.post({url:logoutUrl,headers:{'x-access-token':validtoken}}, function(err, httpResponse, body){
+          var BBM = JSON.parse(httpResponse.body);
+          BBM.status.should.equal(0);
+          should.exist(BBM.message);
+          should.exist(BBM.message.code);
+          BBM.message.code.should.equal(802);
+          done(err);
+        });
+      });
+    });
+
   });
 
 

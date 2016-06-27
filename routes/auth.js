@@ -33,11 +33,22 @@ router.post('/logout', function(req, res, next){
   var BBM = new BBMessage();
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
   if (token) {
-    BBM.setMessage(802); //802 : "Çıkış yaptınız.",
+    debug('token var:', token);
+    var verifiedJwt = jwt.verify(token,'server secret', function(err, decoded) {
+      if (err) {
+        debug('token geçersiz', err);
+        BBM.setWarning(401); //401 : "Token geçersiz."
+      } else {
+        debug('token geçerli');
+        BBM.setMessage(802); //802 : "Çıkış yaptınız.",
+      }
+      res.send(BBM);
+    });
   } else {
+    debug('token yok');
     BBM.setWarning(402); //402 : "Daha önce çıkış yapılmış.",
+    res.send(BBM);
   }
-  res.send(BBM);
 });
 
 
