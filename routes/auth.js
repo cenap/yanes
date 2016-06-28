@@ -26,6 +26,10 @@ router.post('/check', function(req, res, next){
       }
       res.send(BBM);
     });
+  } else {
+    BBM.setWarning(401); //401 : "Token geçersiz."
+    BBM.setData({ tokenverified: false });
+    res.send(BBM);
   }
 });
 

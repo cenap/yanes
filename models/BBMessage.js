@@ -51,11 +51,19 @@ module.exports = function() {
     this.data = data;
   };
 
+  this.getMessage = function(MsgCode) {
+    return (i18n.__(Messages[MsgCode]));
+  };
+
   this.setMessage = function(MsgCode) {
     this.message = {
 			"code" : MsgCode,
 			"msg" : i18n.__(Messages[MsgCode])
 		};
+  };
+
+  this.getError = function(ErrCode) {
+    return (i18n.__(ErrorMessages[ErrCode]));
   };
 
   this.setError = function(ErrCode) {
@@ -64,6 +72,10 @@ module.exports = function() {
       "msg": i18n.__(ErrorMessages[ErrCode])
     };
     this.status = -1;
+  };
+
+  this.getWarning = function(WrnCode) {
+    return(i18n.__(WarningMessages[WrnCode]));
   };
 
   this.setWarning = function(WrnCode) {
