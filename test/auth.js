@@ -5,9 +5,9 @@ var should  = require('chai').should();
 var request = require("request");
 var config = require("../config/config");
 var BBMessage = require("../models/BBMessage");
-var loginUrl = "http://localhost:3000/auth/login";
-var logoutUrl = "http://localhost:3000/auth/logout";
-var checkUrl = "http://localhost:3000/auth/check";
+var loginUrl = "http://localhost:3000/api/auth/login";
+var logoutUrl = "http://localhost:3000/api/auth/logout";
+var checkUrl = "http://localhost:3000/api/auth/check";
 
 
   /*

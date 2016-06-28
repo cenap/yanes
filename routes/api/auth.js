@@ -4,10 +4,10 @@ var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var jwt = require('jsonwebtoken');
-var BBMessage = require('../models/BBMessage');
+var BBMessage = require('../../models/BBMessage');
+var User = require('../../models/user')();
 var i18n  = require('i18n');
 
-var User = require('../models/user')();
 
 router.get('/login', function(req, res, next) {
   res.render('login', { title: 'Giriş' });
