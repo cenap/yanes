@@ -21,9 +21,13 @@ module.exports = function() {
     findByEmail: function(user, callback) {
       //TODO: Do actual DB Query here
       if (user && user.email && isEmailValid(user.email)) {
-        callback(null, user);
+        if (user.email==='cenap@cenap.com') {
+          callback(null, user);
+        } else {
+          callback();
+        }
       } else {
-        callback();
+        callback(new Error('Invalid email'));
       }
     },
 

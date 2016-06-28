@@ -8,6 +8,7 @@ var BBMessage = require("../models/BBMessage");
 var loginUrl = "http://localhost:3000/api/auth/login";
 var logoutUrl = "http://localhost:3000/api/auth/logout";
 var checkUrl = "http://localhost:3000/api/auth/check";
+var remindpasswordUrl = "http://localhost:3000/api/auth/remindpassword";
 
 
   /*
@@ -77,10 +78,13 @@ describe('API:auth', function() {
         BBM = JSON.parse(httpResponse.body);
         BBM.should.exist;
         BBM.should.be.an('object');
+        should.exist(BBM.status);
         BBM.status.should.equal(0);
+        should.exist(BBM.message);
+        should.exist(BBM.message.code);
         BBM.message.code.should.equal(801);
-        BBM.data.should.exist;
-        BBM.data.token.should.exist;
+        should.exist(BBM.data);
+        should.exist(BBM.data.token);
         done(err);
       });
     });
@@ -140,6 +144,7 @@ describe('API:auth', function() {
         request.post({url:logoutUrl,headers:{'x-access-token':validtoken}}, function(err, httpResponse, body){
           if (err) {console.log(err);}
           BBM = JSON.parse(httpResponse.body);
+          should.exist(BBM.status);
           BBM.status.should.equal(0);
           should.exist(BBM.message);
           should.exist(BBM.message.code);
@@ -204,6 +209,7 @@ describe('API:auth', function() {
           var validtoken = BBM.data.token;
           request.post({url:checkUrl,headers:{'x-access-token':validtoken}}, function(err, httpResponse, body){
             BBM = JSON.parse(httpResponse.body);
+            should.exist(BBM.status);
             BBM.status.should.equal(0);
             should.exist(BBM.data);
             should.exist(BBM.data.tokenverified);
@@ -215,6 +221,87 @@ describe('API:auth', function() {
 
     });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+    * REMIND PASSWORD
+    */
+    describe('remindpassword', function () {
+
+      it('should return BBM json', function (done) {
+        request.post({url:remindpasswordUrl}, function(err, httpResponse, body){
+          httpResponse.statusCode.should.be.equal(200);
+          httpResponse.headers['content-type'].should.include('json');
+          httpResponse.body.should.exist;
+          BBM = JSON.parse(httpResponse.body);
+          BBM.should.exist;
+          BBM.should.be.an('object');
+          done(err);
+        });
+      });
+
+      it('should return error code 103 (' + BBM.getError(103) + ') without an email', function (done) {
+        request.post({url:remindpasswordUrl}, function(err, httpResponse, body){
+          BBM = JSON.parse(httpResponse.body);
+          BBM.status.should.equal(-1);
+          should.exist(BBM.error);
+          should.exist(BBM.error.code);
+          BBM.error.code.should.equal(103);
+          done(err);
+        });
+      });
+
+      it('should return error code 107 (' + BBM.getError(107) + ') without a valid email', function (done) {
+        var data = {email:'asdasd'};
+        request.post({url:remindpasswordUrl,form: data}, function(err, httpResponse, body){
+          BBM = JSON.parse(httpResponse.body);
+          BBM.status.should.equal(-1);
+          should.exist(BBM.error);
+          should.exist(BBM.error.code);
+          BBM.error.code.should.equal(107);
+          done(err);
+        });
+      });
+
+      it('should return error code 104 (' + BBM.getError(104) + ') with a valid but not existing email', function (done) {
+        //First get a valid token
+        var data = {email:'asdasd@gmail.com'};
+        request.post({url:remindpasswordUrl, form: data}, function(err, httpResponse, body){
+          BBM = JSON.parse(httpResponse.body);
+          BBM.status.should.equal(-1);
+          should.exist(BBM.error);
+          should.exist(BBM.error.code);
+          BBM.error.code.should.equal(104);
+          done(err);
+        });
+      });
+
+      it('should return message code 803 (' + BBM.getMessage(803) + ') with a valid and existing email', function (done) {
+        //First get a valid token
+        var data = {email:'cenap@cenap.com'};
+        request.post({url:remindpasswordUrl, form: data}, function(err, httpResponse, body){
+          BBM = JSON.parse(httpResponse.body);
+          should.exist(BBM.status);
+          BBM.status.should.equal(0);
+          should.exist(BBM.message);
+          should.exist(BBM.message.code);
+          BBM.message.code.should.equal(803);
+          done(err);
+        });
+      });
+
+    });
 
 
 

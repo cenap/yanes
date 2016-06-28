@@ -7,6 +7,7 @@ var jwt = require('jsonwebtoken');
 var BBMessage = require('../../models/BBMessage');
 var User = require('../../models/user')();
 var i18n  = require('i18n');
+var validator = require('validator');
 
 
 router.get('/login', function(req, res, next) {
@@ -150,27 +151,31 @@ function respond(req, res) {
 router.post('/remindpassword', function (req, res, next){
   var BBM = new BBMessage();
   var email = req.body.email;
-  debug(email);
-  if (email && email.length>3) {
-    User.findByEmail({ email: email }, function (err, user) {
-      if (err) {
-        debug(err);
-        BBM.setError(100); //100 : "Bir hata oluştu.",
-        BBM.setData(err);
-      } else {
-        if (user) {
-          //TODO 1. Generate one time password reset link
-          //TODO 2. Set link to user's email address
-          User.sendPasswordResetEmail();
-          BBM.setMessage(803);//803 : "Şifrenizi sıfırlamanız için email adresinize bir link gönderildi.",
+  if (email) {
+    if (validator.isEmail(email)) {
+      User.findByEmail({ email: email }, function (err, user) {
+        if (err) {
+          debug(err);
+          BBM.setError(100); //100 : "Bir hata oluştu."
+          BBM.setData(err);
         } else {
-          BBM.setError(104);//104 : "Bu emaille kayıtlı kullanıcı bulunamadı.",
+          if (user) {
+            //TODO 1. Generate one time password reset link
+            //TODO 2. Set link to user's email address
+            User.sendPasswordResetEmail();
+            BBM.setMessage(803);//803 : "Şifrenizi sıfırlamanız için email adresinize bir link gönderildi.",
+          } else {
+            BBM.setError(104);//104 : "Bu emaille kayıtlı kullanıcı bulunamadı."
+          }
         }
-      }
+        res.send(BBM);
+      });
+    } else {
+      BBM.setError(107);//107: "Geçersiz email adresi."
       res.send(BBM);
-    });
+    }
   } else {
-    BBM.setError(103);//103 : "Gerekli bilgi eksik.",
+    BBM.setError(103);//103 : "Gerekli bilgi eksik."
     var label   = i18n.__('beklenen');
     var details = {};
     details[label] = 'email';

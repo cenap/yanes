@@ -24,6 +24,7 @@ var ErrorMessages = {
   104: "Bu emaille kayıtlı kullanıcı bulunamadı.",
   105: "Bu isimle kayıtlı kullanıcı bulunamadı.",
   106: "Yanlış şifre.",
+  107: "Geçersiz email adresi.",
 };
 
 var WarningMessages = {
