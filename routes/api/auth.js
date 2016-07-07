@@ -1,3 +1,4 @@
+var configkeys = require('../../config/configkeys.json');
 var debug = require('debug')('yanes:auth');
 var express = require('express');
 var router = express.Router();
@@ -18,7 +19,7 @@ router.post('/check', function(req, res, next){
   var BBM = new BBMessage();
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
   if (token) {
-    var verifiedJwt = jwt.verify(token,'server secret', function(err, decoded) {
+    var verifiedJwt = jwt.verify(token, configkeys.jwtSecret, function(err, decoded) {
       if (err) {
         BBM.setWarning(401); //401 : "Token geçersiz."
       } else {
@@ -39,7 +40,7 @@ router.post('/logout', function(req, res, next){
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
   if (token) {
     debug('token var:', token);
-    var verifiedJwt = jwt.verify(token,'server secret', function(err, decoded) {
+    var verifiedJwt = jwt.verify(token,configkeys.jwtSecret, function(err, decoded) {
       if (err) {
         debug('token geçersiz', err);
         BBM.setWarning(401); //401 : "Token geçersiz."
@@ -134,7 +135,7 @@ function generateToken(req, res, next) {
       id: req.user.id,
       username: req.user.username
     },
-    'server secret', {expiresIn: expires});
+    configkeys.jwtSecret, {expiresIn: expires});
   next();
 }
 

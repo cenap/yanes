@@ -11,7 +11,7 @@ var Userboxbs = React.createClass({
     var thiscomponent = this;
     $.ajax({
       type:'POST',
-      url:'/auth/check',
+      url:'/api/auth/check',
       success:function(resp){
         if (resp.status === 0 && resp.data.tokenverified) {
           thiscomponent.setState({
@@ -87,7 +87,7 @@ var Userboxbs = React.createClass({
     var rm = this.state.remember;
     $.ajax({
       type:'POST',
-      url:'/auth/login',
+      url:'/api/auth/login',
       data:{username:un, password:pw, remember:rm},
       success:function(resp){
         console.log(resp);
@@ -126,10 +126,10 @@ var Userboxbs = React.createClass({
     var thiscomponent = this;
     $.ajax({
       type:'POST',
-      url:'/auth/logout',
+      url:'/api/auth/logout',
       success:function(resp){
         console.log(resp);
-        if (resp.status>=0) {
+        if (resp.status==0) {
           window.localStorage.removeItem('token');
           thiscomponent.setState({
             status            : 'success',
@@ -143,7 +143,25 @@ var Userboxbs = React.createClass({
             console.log(resp.warning.msg);
           }
           thiscomponent.closeLogoutModal();
-        } else {
+        }
+
+        else if(resp.status>0) {
+            window.localStorage.removeItem('token');
+            thiscomponent.setState({
+              status            : 'success',
+              message           : resp.warning.msg,
+              loginBox          : shown,
+              loginButton       : shown,
+              loginSubmitButton : shown,
+              logoutButton      : hidden,
+            });
+            if (resp.status>0) {
+              console.log(resp.warning.msg);
+            }
+            thiscomponent.closeLogoutModal();
+          }
+
+        else {
           $("#LogoutModal").shake(4,8,600);
           if (resp.status<0) {
             thiscomponent.setState({

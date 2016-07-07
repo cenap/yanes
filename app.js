@@ -1,7 +1,10 @@
 /*jslint node: true */
 "use strict";
-
+var configkeys = require('./config/configkeys.json');
+var debug = require('debug')('yanes:app');
 var express = require('express');
+var socket_io = require('socket.io');
+var socketioJwt = require('socketio-jwt');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -11,14 +14,25 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 
 var i18n = require("i18n");
+var config = require('./config/config.js');
+
+var app = express();
+
+//Morgan Logger
+var loggerOptions = {
+    skip: function (req, res) { return res.statusCode < 400; }
+};
+app.use(logger('dev', loggerOptions));
+
+// Socket.io
+var io = socket_io();
+app.io = io;
+
 
 var routes = require('./routes/index');
 var auth = require('./routes/api/auth');
 var users = require('./routes/api/user');
 
-var app = express();
-
-var config = require('./config/config.js');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -26,7 +40,6 @@ app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 //app.use(cookieParser());
@@ -39,13 +52,23 @@ app.use('/', routes);
 app.use('/api/users', users);
 app.use('/api/auth', auth);
 
+
+io.set('authorization', socketioJwt.authorize({
+  secret: configkeys.jwtSecret,
+  handshake: true
+}));
+
+io.on('connection', function(socket){
+  debug('a user connected');
+});
+
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
-
 // error handlers
 
 // development error handler

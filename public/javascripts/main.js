@@ -1,3 +1,5 @@
+var socket = io();
+
 $( document ).ready(function() {
   var token = window.localStorage.getItem('token');
   if (token) {
@@ -13,7 +15,7 @@ $( document ).ready(function() {
 function checklogin() {
   $.ajax({
 		type:'POST',
-		url:'/auth/check',
+		url:'/api/auth/check',
 		success:function(resp){
       console.log(resp);
       if (resp.tokenverified) {

@@ -11,5 +11,13 @@ router.post('/register', function(req, res, next){
   var BBM = new BBMessage();
   res.send(BBM);
 });
+router.post('/updateprofile', function(req, res, next){
+  var BBM = new BBMessage();
+  res.send(BBM);
+});
+router.post('/checkprofile', function(req, res, next){
+  var BBM = new BBMessage();
+  res.send(BBM);
+});
 
 module.exports = router;
