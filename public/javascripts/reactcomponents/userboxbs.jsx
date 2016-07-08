@@ -100,8 +100,14 @@ var Userboxbs = React.createClass({
             loginButton       : hidden,
             loginSubmitButton : hidden,
             logoutButton      : shown,
-          })
+          });
           thiscomponent.closeLoginModal();
+          if (thiscomponent.props.onlogin) {
+            var f = window[thiscomponent.props.onlogin];
+            if ($.isFunction(f)) {
+              f();
+            }
+          }
         } else {
           $("#LoginModal").shake(4,8,600);
           if (resp.status<0) {
@@ -116,6 +122,12 @@ var Userboxbs = React.createClass({
               status   : 'warning',
               msgstyle : 'success'
             });
+            if (thiscomponent.props.onlogin) {
+              var f = window[thiscomponent.props.onlogin];
+              if ($.isFunction(f)) {
+                f();
+              }
+            }
           }
         }
       }
@@ -130,7 +142,6 @@ var Userboxbs = React.createClass({
       success:function(resp){
         console.log(resp);
         if (resp.status==0) {
-          window.localStorage.removeItem('token');
           thiscomponent.setState({
             status            : 'success',
             message           : resp.message.msg,
@@ -143,10 +154,17 @@ var Userboxbs = React.createClass({
             console.log(resp.warning.msg);
           }
           thiscomponent.closeLogoutModal();
+
+          if (thiscomponent.props.onlogout) {
+            var f = window[thiscomponent.props.onlogout];
+            if ($.isFunction(f)) {
+              f();
+            }
+          }
+          window.localStorage.removeItem('token');
         }
 
         else if(resp.status>0) {
-            window.localStorage.removeItem('token');
             thiscomponent.setState({
               status            : 'success',
               message           : resp.warning.msg,
@@ -159,6 +177,14 @@ var Userboxbs = React.createClass({
               console.log(resp.warning.msg);
             }
             thiscomponent.closeLogoutModal();
+
+            if (thiscomponent.props.onlogout) {
+              var f = window[thiscomponent.props.onlogout];
+              if ($.isFunction(f)) {
+                f();
+              }
+            }
+            window.localStorage.removeItem('token');
           }
 
         else {
@@ -251,4 +277,9 @@ var Userboxbs = React.createClass({
   }
 });
 
-ReactDOM.render(<Userboxbs/>, document.getElementById('userbox'));
+ReactDOM.render(<Userboxbs onlogin='onlogin' onlogout='onlogout'/>, document.getElementById('userbox'));
+/*
+var userboxbsfactory = React.createFactory(Userboxbs);
+var userboxbs = userboxbsfactory({ onlogin: 'onlogin' });
+ReactDOM.render(userboxbs, document.getElementById('userbox'));
+*/

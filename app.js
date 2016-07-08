@@ -3,8 +3,8 @@
 var configkeys = require('./config/configkeys.json');
 var debug = require('debug')('yanes:app');
 var express = require('express');
+var jwt = require('jsonwebtoken');
 var socket_io = require('socket.io');
-var socketioJwt = require('socketio-jwt');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -27,6 +27,50 @@ app.use(logger('dev', loggerOptions));
 // Socket.io
 var io = socket_io();
 app.io = io;
+
+io.on('connection', function(socket) {
+  debug('Someone has connected (socket)');
+  socket.on('login', function(data) {
+    var token = socket;
+    socket.authenticated = false;
+    debug('Authenticating: ' , data.token);
+    if (data.token) {
+      var verifiedJwt = jwt.verify(data.token, configkeys.jwtSecret, function(err, decoded) {
+        if (err) {
+          debug(err.message);
+          socket.emit('notauthenticated',{'reason':err.message});
+        } else {
+          debug ("that someone is: " + decoded.username + " (socket)");
+          socket.authenticated = true;
+          socket.decoded = decoded;
+          socket.emit('authenticated',{'hello':decoded.username});
+        }
+      });
+    } else {
+      socket.emit('notauthenticated',{'reason': 'no token'});
+    }
+  });
+
+  socket.on('logout', function(data) {
+    debug('Logging out: ' , data.token);
+    if (data.token) {
+      var verifiedJwt = jwt.verify(data.token, configkeys.jwtSecret, function(err, decoded) {
+        if (err) {
+          debug(err.message);
+        } else {
+          debug (decoded.username + " logged out (socket)");
+          socket.authenticated = false;
+          socket.emit('loggedout',{'good bye': decoded.username});
+          delete socket.decoded;
+        }
+      });
+    } else {
+      socket.emit('notauthenticated',{'reason': 'no token'});
+    }
+  });
+
+});
+
 
 
 var routes = require('./routes/index');
@@ -51,17 +95,6 @@ app.use(i18n.init);
 app.use('/', routes);
 app.use('/api/users', users);
 app.use('/api/auth', auth);
-
-
-io.set('authorization', socketioJwt.authorize({
-  secret: configkeys.jwtSecret,
-  handshake: true
-}));
-
-io.on('connection', function(socket){
-  debug('a user connected');
-});
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

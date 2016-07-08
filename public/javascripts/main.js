@@ -1,11 +1,22 @@
+var jwt = window.localStorage.getItem('token');
 var socket = io();
 
+socket.on('connect', function () {
+  console.log('connected');
+  socket.emit('login', {token: jwt});
+  socket.on('authenticated', function (data) {
+    console.log('authenticated: ', data);
+  });
+  socket.on('notauthenticated', function (data) {
+    console.log('not authenticated : ', data.reason);
+  });
+});
+
 $( document ).ready(function() {
-  var token = window.localStorage.getItem('token');
-  if (token) {
+  if (jwt) {
     $.ajaxSetup({
       headers: {
-        'x-access-token': token
+        'x-access-token': jwt
       }
     });
   }
@@ -25,4 +36,13 @@ function checklogin() {
       }
 		}
 	});
+}
+
+function onlogin(m) {
+  jwt = window.localStorage.getItem('token');
+  socket.emit('login', {token: jwt});
+}
+function onlogout(m) {
+  jwt = window.localStorage.getItem('token');
+  socket.emit('logout', {token: jwt});
 }
