@@ -75,7 +75,7 @@ io.on('connection', function(socket) {
 
 var routes = require('./routes/index');
 var auth = require('./routes/api/auth');
-var users = require('./routes/api/user');
+var user = require('./routes/api/user');
 
 
 // view engine setup
@@ -93,8 +93,8 @@ app.use(passport.initialize());
 app.use(i18n.init);
 
 app.use('/', routes);
-app.use('/api/users', users);
 app.use('/api/auth', auth);
+app.use('/api/user', user);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

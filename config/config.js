@@ -10,6 +10,6 @@ var i18n = require("i18n");
 
 
 i18n.configure({
-  locales: ['tr', 'en'],
+  locales: ['en', 'tr'],
   directory: __dirname + '/locales'
 });

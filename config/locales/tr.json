@@ -1,1 +1,15 @@
-{}
+{
+	"An error occurred.": "Bir hata oluştu.",
+	"Invalid token.": "Geeçersiz token.",
+	"Logged In": "Giriş başarılı",
+	"Cannot login!": "Giriş yapılamadı!",
+	"Logged Out": "Çıkış yaptınız.",
+	"Already logged out.": "Zaten çıkış yapılmış.",
+	"Missing required parameter.": "Gerekli parametre eksik.",
+	"required": "gerekli",
+	"No user registered with this email address could be found.": "Bu email adresi ile kayıtlı hiçbir kullanıcı bulunamadı.",
+	"An link was sent to your email address in order to reset your password.": "Şifrenizi sıfırlamanız için email adresinize bir link gönderildi.",
+	"No user registered with this username could be found.": "Bu kullanıcı ismi ile kayıtlı hiçbir kullanıcı bulunamadı.",
+	"Wrong password.": "Şifre yanlış.",
+	"Invalid email address.": "Geçersiz email adresi."
+}

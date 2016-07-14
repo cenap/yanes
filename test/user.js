@@ -1,27 +1,26 @@
 /* jshint -W030 */
-var debug = require('debug')('yanes:test:auth');
+var debug = require('debug')('yanes:test:user');
 var expect  = require("chai").expect;
 var should  = require('chai').should();
 var request = require("request");
 var config = require("../config/config");
 var BBMessage = require("../models/BBMessage");
-var loginUrl = "http://localhost:3000/api/auth/login";
-var logoutUrl = "http://localhost:3000/api/auth/logout";
-var checkUrl = "http://localhost:3000/api/auth/check";
-var remindpasswordUrl = "http://localhost:3000/api/auth/remindpassword";
+var registerUrl = "http://localhost:3000/api/user/register";
+var updateprofileUrl = "http://localhost:3000/api/user/updateprofile";
+var checkprofileUrl = "http://localhost:3000/api/user/checkprofile";
 
 
   /*
-  * LOGIN
+  * REGISTER
   */
 
-describe('API:auth', function() {
+describe('API:user', function() {
   var BBM = new BBMessage();
 
-  describe('login', function () {
+  describe('register', function () {
 
     it('should return BBM json', function (done) {
-      request.post({url:loginUrl}, function(err, httpResponse, body){
+      request.post({url:registerUrl}, function(err, httpResponse, body){
         httpResponse.statusCode.should.be.equal(200);
         httpResponse.headers['content-type'].should.include('json');
         httpResponse.body.should.exist;
@@ -33,8 +32,8 @@ describe('API:auth', function() {
     });
 
     it('should return status=-1 and error.code=103 (' + BBM.getError(103) + ') when no username/password given', function (done) {
-      var data = null;//{"username":"cenap"};
-      request.post({url:loginUrl, form: data}, function(err, httpResponse, body){
+      var data = null;
+      request.post({url:registerUrl, form: data}, function(err, httpResponse, body){
         BBM = JSON.parse(httpResponse.body);
         BBM.should.exist;
         BBM.status.should.equal(-1);
@@ -43,34 +42,29 @@ describe('API:auth', function() {
       });
     });
 
-    it('should return status=-1 and error.code=108 (' + BBM.getError(108) + ') when invalid username length given aa/cenap given', function (done) {
-      var data = {"username":"aa", "password":"cenap"};
-      request.post({url:loginUrl, form: data}, function(err, httpResponse, body){
+    it('should return status=-1 and error.code=103 (' + BBM.getError(103) + ') when username is provided without a password', function (done) {
+      var data = {"username":"aaaa", "password":""};
+      request.post({url:registerUrl, form: data}, function(err, httpResponse, body){
         BBM = JSON.parse(httpResponse.body);
         BBM.should.exist;
-        BBM.should.be.an('object');
         BBM.status.should.equal(-1);
-        should.exist(BBM.error);
-        //should.exist(BBM.data);
-        BBM.error.code.should.equal(108);
+        BBM.error.code.should.equal(103);
         done(err);
       });
     });
 
-    it('should return status=-1 and error.code=108 (' + BBM.getError(105) + ') when invalid password length given aaaaa/aaaa given', function (done) {
-      var data = {"username":"aa", "password":"cenap"};
-      request.post({url:loginUrl, form: data}, function(err, httpResponse, body){
+    it('should return status=-1 and error.code=103 (' + BBM.getError(103) + ') when password is provided without a username', function (done) {
+      var data = {"username":"", "password":"aaaaaa"};
+      request.post({url:registerUrl, form: data}, function(err, httpResponse, body){
         BBM = JSON.parse(httpResponse.body);
         BBM.should.exist;
-        BBM.should.be.an('object');
         BBM.status.should.equal(-1);
-        should.exist(BBM.error);
-        //should.exist(BBM.data);
-        BBM.error.code.should.equal(108);
+        BBM.error.code.should.equal(103);
         done(err);
       });
     });
 
+/*
     it('should return status=-1 and error.code=105 (' + BBM.getError(105) + ') when non existent user aaaa/cenap given', function (done) {
       var data = {"username":"aaaa", "password":"cenap"};
       request.post({url:loginUrl, form: data}, function(err, httpResponse, body){
@@ -116,7 +110,7 @@ describe('API:auth', function() {
         done(err);
       });
     });
-
+*/
   });
 
 
@@ -125,7 +119,7 @@ describe('API:auth', function() {
   /*
   * LOGOUT
   */
-
+/*
   describe('logout', function () {
 
 
@@ -193,6 +187,7 @@ describe('API:auth', function() {
     /*
     * CHECK
     */
+/*
     describe('check', function () {
 
       it('should return BBM json', function (done) {
@@ -265,6 +260,7 @@ describe('API:auth', function() {
     /*
     * REMIND PASSWORD
     */
+/*
     describe('remindpassword', function () {
 
       it('should return BBM json', function (done) {
@@ -331,7 +327,7 @@ describe('API:auth', function() {
 
     });
 
-
+*/
 
 
 });
