@@ -18,5 +18,6 @@
 	"optional": "optional",
 	"remember": "remember",
 	"Missing required parameter(s).": "Missing required parameter(s).",
-	"Invalid parameter(s).": "Invalid parameter(s)."
+	"Invalid parameter(s).": "Invalid parameter(s).",
+	"email": "email"
 }

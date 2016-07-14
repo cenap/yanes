@@ -20,12 +20,14 @@ function validateRegistrationRequest(req, res, next) {
 
     var username = req.body.username;
     var password = req.body.password;
+    var email    = req.body.email;
     var options = {min:3, max: 20};
     if (username) {
       if (validator.isLength(username, options) && validator.isAlphanumeric(username, 'tr-TR') ) {
         //OK
       }
       else {
+        BBM.setError(108);//108: "Invalid parameter(s).",
         BBM.addDetail('invalid','username');
       }
     }
@@ -40,6 +42,7 @@ function validateRegistrationRequest(req, res, next) {
         //OK
       }
       else {
+        BBM.setError(108);//108: "Invalid parameter(s).",
         BBM.addDetail('invalid','password');
       }
     }
@@ -47,6 +50,22 @@ function validateRegistrationRequest(req, res, next) {
       BBM.setError(103);//103: "Missing required parameter(s)."
       BBM.addDetail('required','password');
     }
+
+    if (email) {
+      if (validator.isEmail(email)) {
+        //OK
+      }
+      else {
+        BBM.setError(108);//108: "Invalid parameter(s).",
+        BBM.addDetail('invalid','email');
+      }
+    }
+    else {
+      BBM.setError(103);//103: "Missing required parameter(s)."
+      BBM.addDetail('required','email');
+    }
+
+
   }
   else {
     BBM.setError(103);//103: "Missing required parameter(s)."
