@@ -10,7 +10,36 @@ var validator = require('validator');
 router.post('/register', validateRegistrationRequest, function(req, res, next){
   var BBM = new BBMessage();
   //TODO: Do actual registration here
-  res.send(BBM);
+  User.find({ username: req.body.username }, function (err, user) {
+    if (err) {
+      BBM.setError(100); //100 : "An error occurred."
+      BBM.setData(err);
+    }
+    else {
+      if (user) {
+        BBM.setError(109); //109: "This username is already taken.",
+      }
+      else {
+        User.find({ email: req.body.email }, function (err, user) {
+          if (err) {
+            BBM.setError(100); //100 : "An error occurred."
+            BBM.setData(err);
+          }
+          else {
+            if (user) {
+              BBM.setError(110); //110: "A user with this email is already registered.",
+            }
+            else {
+              //username and email OK. Do registration HERE
+            }
+          }
+          res.send(BBM);
+        });
+      }
+      res.send(BBM);
+    }
+    res.send(BBM);
+  });
 });
 
 function validateRegistrationRequest(req, res, next) {

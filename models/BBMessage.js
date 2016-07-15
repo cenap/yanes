@@ -26,6 +26,8 @@ var ErrorMessages = {
   106: "Wrong password.",
   107: "Invalid email address.",
   108: "Invalid parameter(s).",
+  109: "This username is already taken.",
+  110: "A user with this email is already registered.",
 };
 
 var WarningMessages = {
