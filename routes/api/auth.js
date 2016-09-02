@@ -1,5 +1,5 @@
-var configkeys = require('../../config/configkeys.json');
 var debug = require('debug')('yanes:auth');
+var configkeys = require('../../config/configkeys.json');
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
@@ -72,7 +72,7 @@ function validateAuthenticationRequest(req, res, next) {
     if (username) {
       if (validator.isLength(username, options) && validator.isAlphanumeric(username, 'tr-TR') ) {
         //OK
-        debug(validator.isLength(username, options), validator.isAlphanumeric(username, 'tr-TR'));
+        //debug(validator.isLength(username, options), validator.isAlphanumeric(username, 'tr-TR'));
       }
       else {
         BBM.setError(108);//108: "Invalid parameter(s).",
@@ -122,7 +122,6 @@ function validateAuthenticationRequest(req, res, next) {
 
 function authenticate(req, res, next) {
   var BBM = new BBMessage();
-
   passport.authenticate('local', function(err, user, info) {
     if (err) {
       debug(err.message);
