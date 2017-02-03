@@ -225,7 +225,7 @@ var Userboxbs = React.createClass({
                   Username:
                 </div>
                 <div className="col-sm-6">
-                  <input type="text" name="username" placeholder="Email address" onChange={this.handleUsernameValueChange} value={this.state.username}/>
+                  <input type="text" name="username" placeholder="Username" onChange={this.handleUsernameValueChange} value={this.state.username}/>
                 </div>
               </div>
               <div className="row">
